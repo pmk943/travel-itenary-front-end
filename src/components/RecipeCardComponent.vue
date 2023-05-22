@@ -8,7 +8,7 @@ const router = useRouter();
 
 const showDetails = ref(false);
 const recipeIngredients = ref([]);
-const recipeSteps = ref([]);
+const  recipeSteps = ref([]);
 const user = ref(null);
 
 const props = defineProps({

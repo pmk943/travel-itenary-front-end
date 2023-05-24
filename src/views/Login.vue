@@ -17,7 +17,10 @@ const user = ref({
   email: "",
   password: "",
 });
-
+const emailRules = [(value) => !!value || 'Email is required',
+(value) => /.+@.+\..+/.test(value) || 'Invalid email address'
+]
+const passwordRules = [(value) => !!value || 'Password is required']
 onMounted(async () => {
   if (localStorage.getItem("user") !== null) {
     router.push({ name: "recipes" });
@@ -46,7 +49,8 @@ async function createAccount() {
 
 async function login() {
   console.log(user.value);
-  await UserServices.loginUser(user)
+  if(email.value && password.value){
+    await UserServices.loginUser(user)
     .then((data) => {
       window.localStorage.setItem("user", JSON.stringify(data.data));
       snackbar.value.value = true;
@@ -60,6 +64,7 @@ async function login() {
       snackbar.value.color = "error";
       snackbar.value.text = error.response.data.message;
     });
+  }
 }
 
 function openCreateAccount() {
@@ -78,18 +83,21 @@ function closeSnackBar() {
 <template>
   <v-container>
     <div id="body">
+    <v-form validate-on="submit" @submit="login"> 
       <v-card class="rounded-lg elevation-5">
         <v-card-title class="headline mb-2">Login </v-card-title>
         <v-card-text>
           <v-text-field
             v-model="user.email"
             label="Email"
+            :rules="emailRules"
             required
           ></v-text-field>
 
           <v-text-field
             v-model="user.password"
             label="Password"
+            :rules="passwordRules"
             required
           ></v-text-field>
         </v-card-text>
@@ -99,9 +107,10 @@ function closeSnackBar() {
           >
           <v-spacer></v-spacer>
 
-          <v-btn variant="flat" color="primary" @click="login()">Login</v-btn>
+          <v-btn variant="flat" type="submit" color="primary">Login</v-btn>
         </v-card-actions>
       </v-card>
+    </v-form>
 
       <v-card class="rounded-lg elevation-5 my-8">
         <v-card-title class="text-center headline">
